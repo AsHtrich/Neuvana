@@ -2,9 +2,12 @@ from flask import Flask, render_template, request, url_for, session, send_file, 
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
+import requests
+from textblob import TextBlob
 
 load_dotenv()
 hf_api_key = os.getenv('HF_API_KEY')
+Model_URL = os.getenv('Model_URL')
 
 app = Flask(__name__,template_folder='templates')
 app.secret_key = os.getenv('NeuH_KEY')
@@ -12,6 +15,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SDU')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+FILTER = ['harm','harrassment','emotion','stress','mental health','stalking','illness']
+FILTER = set(FILTER)
 class Users(db.Model):
     sno = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(100), nullable = False)
@@ -49,6 +54,39 @@ class TherapyForm(db.Model):
 with app.app_context():
     db.create_all()
 
+def LLM_promptFILTER(prompt):
+    url = "https://www.google.com/search?q=" + query
+    response = requests.get(url)
+    global FILTER
+    if response.status_code == 200:
+        data = response.text
+        data = str(data)
+        if any(word in data for word in FILTER):
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def query(url,header,send):
+    response = requests.post(url, headers=header, json=send)
+    return response.json()
+
+def LLMChatBOT_reply(prompt):
+    global Model_URL
+    global hf_api_key
+    prompt = prompt + ". tell me what to do."
+    header = {'Authorization': "Bearer " + hf_api_key}
+    op = query(Model_URL,header,{"inputs" : prompt})
+    reply = op[0]['generated_text']
+    Rate_Limit = 9
+    while(reply[len(reply)-1] != '.' and Rate_Limit != 0):
+        op = query(Model_URL,header,{"inputs": reply})
+        reply = op[0]['generated_text']
+        Rate_Limit -= 1
+    reply = reply[len(prompt):]
+    return reply
+
 @app.route('/',methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -64,7 +102,6 @@ def login():
                     return render_template('login.html',error='Invalid Credentials')
                 else:
                     session['username'] = log_check[0].username
-                    session['email'] = log_check[0].email
                     return redirect(url_for('dashboard'))
         except:
             return render_template('login.html',error='Server error, we will get back to you shortly')
@@ -75,7 +112,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
-        password = request.form['password']
+        password = request.form['password']   
         username = str(username)
         email = str(email)
         password = str(password)
@@ -98,9 +135,70 @@ def register():
     return render_template('register.html',error = None)
 
 
+@app.route('/dashboard')
+def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    squery = ConversationScore.query.filter_by(username=username)
+    scores = squery.all()
+    if len(scores) == 0:
+        pdata = [0,0,100,0,0]
+        x = [0]
+        y = [0]
+        return render_template('dashboard.html',pdata=pdata,x=x,y=y)
+    x = []
+    y = []
+    emotional_score = [0,0,0,0,0]
+    for i in range(0,len(scores)):
+        if scores[i].polarity < -0.6:
+            emotional_score[0] += 1
+        elif scores[i].polarity < -0.2:
+            emotional_score[1] += 1
+        elif scores[i].polarity < 0.2:
+            emotional_score[2] += 1
+        elif scores[i].polarity < 0.6:
+            emotional_score[3] += 1
+        else:
+            emotional_score[4] += 1
+        x.append(i+1)
+        y.append(scores[i].subjectivity)
+    pdata = [((emotional_score[i]*100)/len(scores)) for i in range(0,5)]
+    return render_template('dashboard.html',username=username,pdata=pdata,x=x,y=y)
+
+@app.route('/chatbot',methods=['GET','POST'])
+def chatbot():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    if request.method == 'POST':
+        prompt = request.form['prompt']
+        prompt = str(prompt)
+        reply = None
+        if LLM_promptFILTER(prompt) == True:
+            polarity = TextBlob(prompt).sentiment.polarity
+            subjectivity = TextBlob(prompt).sentiment.subjectivity
+            try:
+                with app.app_context():
+                    newConv = ConversationScore(username=username,polarity=polarity,subjectivity=subjectivity)
+                    db.session.add(newConv)
+                    db.session.commit()
+            except:
+                pass
+            reply = LLMChatBOT_reply(prompt)
+        else:
+            reply = 'I am sorry I can not help you with that as I am a Mental-health chatbot'
+        render_template('chatbot.html',username=username,reply=reply)
+    return render_template('chatbot.html',username=username,reply='Hello '+username+"! How may I help you?")
+
 @app.route('/static/<filename>')
 def static_file(filename):
     return send_file(f'static/{filename}')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 if __name__=="__main__":
     app.run(debug=True)
