@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>articles</title>
+    <title>dashboard</title>
     <link rel="stylesheet" href="../style.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -52,25 +52,23 @@
           <button class="bg-white hover:bg-gray-700 hover:text-white text-black font-bold px-4 xl:px-6 py-2 xl:py-3 rounded-lg">Log Out</button>
         </div>
       </header>
+    
+      <section class="primorange" style="min-height: 500px;">
+        <h1 class="font-bold text-7xl mb-12  text-white">Welcome to Your Mental Health Dashboard</h1>
+        <p class="border border-4 p-8 rounded-lg border-black bg-[#202731] font-semibold text-3xl text-left mb-12 text-[#FFE6C7]">Navigating your mental health journey is a personal and meaningful path, <br> and we're here to support you every step of the way. <br><br> Welcome to your Mental Health Dashboard, a space designed to help you gain <br>deeper insights into your emotional well-being.</p>
+        <div class="curve"></div>
+        </section>
 
-      <section>
-        <div class="container flex  justify-between items-center text-[#FFE6C7]">
-        <div class="w-1/2 p-8 m-4">
-            <p class="text-4xl font-semibold">Articles, Videos and podcasts</p>
-            <p class="text-2xl font-medium">Hundreds of articles for any mind, any mood, any goal. Browse all of our articles on mental health, mindfulness, sleep, and more.</p>
-            <!-- <audio controls>
-                <source src="horse.mp3" type="audio/mpeg">
-              Your browser does not support the audio element.
-              </audio>  -->
-        </div>
-        <div class="w-1/2 p-8 m-4">
-            <iframe width="750" height="450" src="https://www.youtube.com/embed/Hdvhe0Nqqek?si=xeWlMWde5JszDbXQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-        
-      </div>
-      <div class="curve"></div>
-      </section>
+        <section>
+            <div class="container flex space-x-2 justify-between items-center text-[#FFE6C7]">
+                <div class="w-1/2 h-[800px] border ">
       
+                </div>
+                <div class="w-1/2 h-[800px] border">
       
+                </div>
+              </div>
+        </section>
+
 </body>
 </html> 
