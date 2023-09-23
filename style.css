@@ -121,7 +121,11 @@
         fill: hsl(240, 3%, 6%);
       }
 
-    
+      .video-embed {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+      }
 
       .spacer {
         aspect-ratio: 960/300; /* Maintain the aspect ratio */
