@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>therapy</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>  
+      <header class="primorange shadow-lg h-24 hidden md:flex">
+        <a href="" class=" flex-shrink flex items-center justify-center px-4 lg:px-6 xl:px-8">
+          <img class="h-16" src="../static/white.svg" alt="" />
+        </a>
+        <nav class="header-links contents font-semibold text-base lg:text-lg">
+          <ul class="flex items-center ml-4 xl:ml-8 mx-auto">
+            <li class="p-3 xl:p-6">
+              <a href="">
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="p-3 xl:p-6">
+              <a href="{{ url_for('articles') }}">
+                <span>Articles</span>
+              </a>
+            </li>
+            <li class="p-3 xl:p-6">
+              <a href="">
+                <span>Hope</span>
+              </a>
+            </li>
+            <li class="p-3 xl:p-6">
+              <a href="">
+                <span>Therapy</span>
+              </a>
+            </li>
+            <li class="p-3 xl:p-6 ">
+              <a href="">
+                <span>Chat</span>
+              </a>
+            </li>
+            <li class="p-3 xl:p-6">
+              <a href="">
+                <span>Contacts</span>
+              </a>
+            </li>
+            
+          </ul>
+        </nav>
+        
+        <div class=" flex items-center px-4 lg:px-6 xl:px-8">
+          <button class="bg-white hover:bg-gray-700 hover:text-white text-black font-bold px-4 xl:px-6 py-2 xl:py-3 rounded-lg">Log Out</button>
+        </div>
+      </header>
+
+
+    <section class="primorange" style="min-height: 800px;">
+        <h1 class="font-bold text-7xl mb-12  text-white">Everyone deserves to be happy.</h1>
+        <p class="border border-4 p-8 rounded-lg border-black  font-semibold text-3xl text-left mb-12 text-[#FFE6C7]">We understand that taking the first step towards seeking therapy <br> is a <span class="text-[#202731]">significant and courageous decision.</span> <br><br> We're here to <span class="text-[#202731]">support</span>  you on your journey to improved mental well-being.</p>
+        <div class="container flex  justify-between items-center text-[#FFE6C7]">
+          <p class="w-1/2 bg- rounded-lg  bg-[#202731] p-8 mx-4 text-2xl font-semibold">Remember, seeking therapy is a sign of strength, not weakness. It's a powerful tool for personal growth and healing. 
+            Whether you're facing stress, anxiety, depression, or simply seeking guidance in life, our therapists are here to help you navigate your path to a happier, healthier you.
+          </p>
+          <p class=" w-1/2 rounded-lg p-8 mx-4 bg-[#202731] text-2xl font-semibold">Therapy is a safe space where you can explore your thoughts, emotions, and experiences, free from judgment. 
+          Our dedicated team of therapists is committed to providing you with the guidance and care you deserve.
+                      </p>
+        </div>
+    </section>
+    
+    <section class="bubble pt-28">
+        <div class="grid max-w-screen-xl grid-cols-1 gap-8 px-8 py-16 mx-auto rounded-lg md:grid-cols-2 md:px-12 lg:px-16 xl:px-32 dark:bg-gray-800 dark:text-gray-100">
+            <div class="flex flex-col justify-between">
+                <div class="space-y-2">
+                    <p class="text-2xl font-bold leadi lg:text-2xl">Take a moment to fill out the form below, and let's begin this journey together. <br> We're honored to be a part of your story.</p>
+                </div>
+                <img src="../static/doodle.svg" alt="" class="p-6 h-72 md:h-64">
+            </div>
+            <form novalidate="" class="space-y-6">
+                <div>
+                  <label for="typeOT">What kind of therapy are you looking for ?</label>
+                  <select id="typeOT" class="text-black pl-2" name="typeOT">
+                    <option value="counsellor">Counsellor</option>
+                    <option value="dietician">Dietician</option>
+                    <option value="lifecoach">Life Coach</option>
+                    <option value="hypno">Hypno Therapist</option>
+                  </select> 
+                </div>
+                <div>
+                    <label for="date" class="text-sm">Date</label>
+                    <input id="date" type="date" class="w-full p-3 rounded dark:bg-gray-800">
+                </div>
+                <div>
+                    <label for="time" class="text-sm">Time</label>
+                    <input id="time" type="time" class="w-full p-3 rounded dark:bg-gray-800"></input>
+                </div>
+                <div>
+                  <label for="city" class="text-sm">City</label>
+                  <input id="city" type="city" class="w-full p-3 rounded dark:bg-gray-800"></input>
+              </div>
+              <div>
+                <label for="gender" class="text-sm">Gender Preference</label>
+                <input id="gender" type="gender" class="w-full p-3 rounded dark:bg-gray-800"></input>
+              </div>
+              <div>
+                <label for="phno" class="text-sm">Contact Number</label>
+                <input id="phno" type="number" class="w-full p-3 rounded dark:bg-gray-800"></input>
+              </div>
+                
+                <button type="submit" class="w-full p-3 text-sm font-bold tracki uppercase rounded dark:bg-violet-400 dark:text-gray-900">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+ 
+</body>
+</html> 
