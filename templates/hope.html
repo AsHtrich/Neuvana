@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>hope</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css' )}}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>  
       <header class="primorange shadow-lg h-24 hidden md:flex">
         <a href="" class=" flex-shrink flex items-center justify-center px-4 lg:px-6 xl:px-8">
-          <img class="h-16" src="../static/white.svg" alt="" />
+          <img class="h-16" src="{{ url_for('static', filename='white.svg' )}}" alt="" />
         </a>
         <nav class="header-links contents font-semibold text-base lg:text-lg">
           <ul class="flex items-center ml-4 xl:ml-8 mx-auto">
@@ -40,7 +40,7 @@
               </a>
             </li>
             <li class="p-3 xl:p-6">
-              <a href="{{ url_for('contacts') }}">
+              <a href="#">
                 <span>Contacts</span>
               </a>
             </li>
@@ -49,7 +49,13 @@
         </nav>
         
         <div class=" flex items-center px-4 lg:px-6 xl:px-8">
-          <button class="bg-white hover:bg-gray-700 hover:text-white text-black font-bold px-4 xl:px-6 py-2 xl:py-3 rounded-lg">Log Out</button>
+          <a
+                    class="mb-3 flex w-full items-center justify-center text-black rounded bg-info px-7 pb-2.5 pt-3 text-center text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#54b4d3] transition duration-150 ease-in-out hover:bg-info-600 hover:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] focus:bg-info-600 focus:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] focus:outline-none focus:ring-0 active:bg-info-700 active:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(84,180,211,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)]"
+                    style="background-color: rgb(0, 0, 0)"
+                    href="{{ url_for('logout') }}"
+                    role="button">
+                    Logout
+                </a>
         </div>
       </header>
     
@@ -58,6 +64,30 @@
             <p class="text-6xl pb-4  font-semibold">Stories</p>
             <p class="text-2xl text-[#FFE6C7] font-medium">Explore what our readers have to say about their mental health and journey of self-discovery with these heartwarming stories! </p>
         </div>
+        {% if story %}
+        <div class="items-center " style="background-color: rgba(241, 166, 86, 0.94); margin-left: 20%; margin-right: 20%; border-radius: 2%; padding-left: 5%; padding-right: 5%;padding-top: 5%; padding-bottom: 5%;">
+          <p class="text-2xl text-[#FFFFFF] font-medium">{{ story }}</p>
+        </div>
+        {% else %}
+        <div class="items-center">
+          <p class="text-2xl text-[#FFE6C7] font-medium">Uh-oh! We are out of Stories come by Later!</p>
+        </div>
+        {% endif %}
+        <br>
+        <br>
+        <form action="/hope" method="POST">
+          <div class="mb-4" align="center">
+              <label for="text_input" class="text-xl text-[#FFFFFF] font-large center">Your Story:</label>
+              <textarea id="story" name="story" class="w-full p-4 bg-[#FFE6C7] text-black rounded" rows="4" placeholder="Enter your story"></textarea>
+          </div>
+          <div class="mb-4" align="center">
+              <button type="submit" class="bg-[#e87f00] text-white py-2 px-4 rounded-lg">Submit</button>
+          </div>
+          {% if error %}
+          <p class="text-2xl text-[#FFE6C7] font-medium">{{error}}</p>
+          {% endif %}
+      </form>
+
       </section>
 
 

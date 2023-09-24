@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>chatbot</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css' )}}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>  
       <header class="primorange shadow-lg h-24 hidden md:flex">
         <a href="" class=" flex-shrink flex items-center justify-center px-4 lg:px-6 xl:px-8">
-          <img class="h-16" src="../static/white.svg" alt="" />
+          <img class="h-16" src="{{ url_for('static', filename='white.svg' )}}" alt="" />
         </a>
         <nav class="header-links contents font-semibold text-base lg:text-lg">
           <ul class="flex items-center ml-4 xl:ml-8 mx-auto">
             <li class="p-3 xl:p-6">
-              <a href="">
+              <a href="{{ url_for('dashboard') }}">
                 <span>Dashboard</span>
               </a>
             </li>
@@ -25,22 +25,22 @@
               </a>
             </li>
             <li class="p-3 xl:p-6">
-              <a href="">
+              <a href="{{ url_for('hope') }}">
                 <span>Hope</span>
               </a>
             </li>
             <li class="p-3 xl:p-6">
-              <a href="">
+              <a href="{{ url_for('therapy') }}">
                 <span>Therapy</span>
               </a>
             </li>
             <li class="p-3 xl:p-6 ">
-              <a href="">
+              <a href="{{ url_for('chatbot') }}">
                 <span>Chat</span>
               </a>
             </li>
             <li class="p-3 xl:p-6">
-              <a href="">
+              <a href="#">
                 <span>Contacts</span>
               </a>
             </li>
@@ -49,7 +49,13 @@
         </nav>
         
         <div class=" flex items-center px-4 lg:px-6 xl:px-8">
-          <button class="bg-white hover:bg-gray-700 hover:text-white text-black font-bold px-4 xl:px-6 py-2 xl:py-3 rounded-lg">Log Out</button>
+          <a
+                    class="mb-3 flex w-full items-center justify-center text-black rounded bg-info px-7 pb-2.5 pt-3 text-center text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#54b4d3] transition duration-150 ease-in-out hover:bg-info-600 hover:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] focus:bg-info-600 focus:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] focus:outline-none focus:ring-0 active:bg-info-700 active:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(84,180,211,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)]"
+                    style="background-color: rgb(0, 0, 0)"
+                    href="{{ url_for('logout') }}"
+                    role="button">
+                    Logout
+                </a>
         </div>
       </header>
 
@@ -58,14 +64,17 @@
         <p class="border border-4 border-white p-8 rounded-lg border-black mx-auto font-semibold text-3xl text-left mb-12 text-[#FFE6C7]">Feel free to ask any questions you have on your mind. <br>
             Whether it's about general knowledge, advice, or just a friendly chat, F.A.M. is here to help.</p>
         </section>
-        
+        {% if reply %}
+        <p id='typing-text' align="center">{{ reply }}</p>
+        {% endif %}
         <section class="bubble mx-8  spacer pt-60" >
             <div class="w-full h-72">
                 <p><br><br><br><br></p>
-                <form action="" class="flex">
+                <form action="/chatbot" method="POST" class="flex">
                     <input
-                      id="chatquery"
-                      type="chatquery"
+                      id="query"
+                      name="query"
+                      type="text"
                       placeholder="Enter queries here"
                       class="border bg-[#FFE6C7] text-black flex-grow p-4 rounded"
                     />

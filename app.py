@@ -26,14 +26,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SDU')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+FILTER = ['disease','medical','accident','health','illness','harassment','emotion','abuse']
+FILTER = set(FILTER)
+
 scheduler = BackgroundScheduler()
 scheduler.start()
 
-FILTER = ['harm','harrassment','emotion','stress','mental health','stalking','illness']
-FILTER = set(FILTER)
 gDate = None
-ALink = []
-ATitle = []
+Links = []
 class Users(db.Model):
     sno = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(100), nullable = False)
@@ -211,45 +211,45 @@ def articles():
     if 'username' not in session:
         return redirect(url_for('login'))
     global gDate
-    global ALink
-    global ATitle
+    global Links
     if gDate == date.today():
-        return render_template('articles.html',Title = ATitle,Link = ALink,username = session['username'])
+        return render_template('articles.html',Link = Links,username = session['username'])
     gDate = date.today()
-    ALink = []
-    ATitle = []
-    Link = []
-    Title = []
+    Links = []
+    tlink = []
     page = requests.get("https://www.calmsage.com/")
     soup = BeautifulSoup(page.content, 'html.parser')
     res = soup.find_all('a',class_="btn_read")
     for i in range(0,len(res)):
+        tlink = []
         title = res[i]['href']
-        Link.append(title)
+        tlink.append(title)
         title = re.sub(r'https://www.calmsage.com/','',title)
         title = re.sub(r'-',' ',title)
         title = re.sub(r'/','',title)
-        Title.append(title)
+        tlink.append(title)
+        Links.append(tlink)
     page = requests.get("https://www.health.harvard.edu/blog")
     soup = BeautifulSoup(page.content, 'html.parser')
     res = soup.find_all('a',class_="hover:text-red transition-colors duration-200")
     for i in range(0,len(res)):
-        Link.append(res[i]['href'])
-        Title.append(res[i].text)
+        tlink = []
+        tlink.append(res[i]['href'])
+        tlink.append(res[i].text)
+        Links.append(tlink)
     need = 8
     random.seed(time.time())
+    ALink = []
     try:
         while(need != 0):
-            i = random.randint(0,len(Link))
-            ALink.append(Link[i])
-            ATitle.append(Title[i])
-            Link.pop(i)
-            Title.pop(i)
+            i = random.randint(0,len(Links))
+            ALink.append(Links[i])
+            Links.pop(i)
             need -= 1
     except:
         pass
-
-    return render_template('articles.html',Title = ATitle,Link = ALink,username = session['username'])
+    Links = ALink
+    return render_template('articles.html',Link = ALink,username = session['username'])
 
 @app.route('/dashboard')
 def dashboard():
@@ -288,9 +288,10 @@ def chatbot():
         return redirect(url_for('login'))
     username = session['username']
     if request.method == 'POST':
-        prompt = request.form['prompt']
+        prompt = request.form['query']
         prompt = str(prompt)
         reply = None
+        print(prompt)
         if LLM_promptFILTER(prompt) == True:
             polarity = TextBlob(prompt).sentiment.polarity
             subjectivity = TextBlob(prompt).sentiment.subjectivity
@@ -304,8 +305,55 @@ def chatbot():
             reply = LLMChatBOT_reply(prompt)
         else:
             reply = 'I am sorry I can not help you with that as I am a Mental-health chatbot'
-        render_template('chatbot.html',username=username,reply=reply)
-    return render_template('chatbot.html',username=username,reply='Hello '+username+"! How may I help you?")
+        return render_template('chatbot.html',username=username,reply=reply)
+    return render_template('chatbot.html',username=username,reply="Hello! How may I help you?")
+
+@app.route('/therapy',methods=['GET','POST'])
+def therapy():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    if request.method == 'POST':
+        typeOT = request.form['typeOT']
+        day = request.form['date']
+        tim = request.form['time']
+        city = request.form['city']
+        gender = request.form['city']
+        phno = request.form['phno']
+        nTherapy = TherapyForm(username=username,date=day,time=tim,city=city,typeOT=typeOT,gender=gender,ph_no=phno)
+        with app.app_context():
+            db.session.add(nTherapy)
+            db.session.commit()
+    return render_template('therapy.html',username=username)
+
+@app.route('/hope',methods=['GET','POST'])
+def hope():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    story = None
+    error = None
+    username = session['username']
+    if request.method == 'POST':
+        pstory = request.form['story']
+        print(pstory)
+        if TextBlob(pstory).sentiment.subjectivity >= 0.2:
+            with app.app_context():
+                nstory = Stories(username=username,story=pstory)
+                db.session.add(nstory)
+                db.session.commit()
+            error = 'Thanks for your story!'
+        else:
+            error = 'Please write stories that inspire others to grow!'
+    qry = Stories.query.all()
+    if len(qry) == 0:
+        return render_template('hope.html',error=error,username=username,story=story)
+    try:
+        random.seed(time.time())
+        sel = random.randint(0,len(qry))
+        story = qry[sel].story
+    except:
+        story = qry[0].story
+    return render_template('hope.html',error=error,username=username,story=story)
 
 @app.route('/static/<filename>')
 def static_file(filename):
